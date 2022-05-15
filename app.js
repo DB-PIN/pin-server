@@ -5,6 +5,8 @@ const session = require("express-session");
 const { sequelize } = require("./models");
 const dotenv = require("dotenv");
 // const { generateDummy } = require('./models/dummy');
+const passport = require("passport");
+const session = require("express-session");
 
 dotenv.config();
 
@@ -61,3 +63,9 @@ app.use((err, req, res) => {
 app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기 중");
 });
+
+app.use(
+  session({ secret: "비밀코드", resave: true, saveUninitialized: false })
+);
+app.use(passport.initialize());
+app.use(passport.session());
