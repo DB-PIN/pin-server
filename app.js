@@ -6,7 +6,6 @@ const { sequelize } = require("./models");
 const dotenv = require("dotenv");
 // const { generateDummy } = require('./models/dummy');
 const passport = require("passport");
-const session = require("express-session");
 
 
 dotenv.config();
