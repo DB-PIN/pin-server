@@ -5,10 +5,13 @@ const session = require("express-session");
 const { sequelize } = require("./models");
 const dotenv = require("dotenv");
 // const { generateDummy } = require('./models/dummy');
+const passport = require("passport");
 
 dotenv.config();
+const passportConfig = require("./passport");
 
 const app = express();
+passportConfig();
 app.set("port", process.env.PORT);
 
 // force가 true이면 DB reset
@@ -43,7 +46,7 @@ app.use(
   })
 );
 
-app.use("/api", require("./routes"));
+app.use("/api", require("./routes/index"));
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
@@ -61,3 +64,6 @@ app.use((err, req, res) => {
 app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기 중");
 });
+
+app.use(passport.initialize());
+app.use(passport.session());
