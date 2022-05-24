@@ -15,10 +15,6 @@ module.exports = class Category extends Sequelize.Model {
           type: "varchar(10)",
           allowNull: true,
         },
-        color: {
-          type: "varchar(10)",
-          allowNull: true,
-        },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,

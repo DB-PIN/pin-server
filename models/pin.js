@@ -27,12 +27,28 @@ module.exports = class Pin extends Sequelize.Model {
           },
           onDelete: "CASCADE",
         },
-        longitude: {
-          type: Sequelize.FLOAT,
-          allowNull: true,
+        emotionId: {
+          type: Sequelize.INTEGER.UNSIGNED,
+          references: {
+            models: "Emotion",
+            key: "emotionId",
+          },
+          onDelete: "CASCADE",
         },
-        latitude: {
-          type: Sequelize.FLOAT,
+        groupId: {
+          type: Sequelize.INTEGER.UNSIGNED,
+          references: {
+            models: "Group",
+            key: "groupId",
+          },
+          onDelete: "CASCADE",
+        },
+        name: {
+          type: "varchar(10)",
+          allowNull: false,
+        },
+        address: {
+          type: "varchar(45)",
           allowNull: false,
         },
         createdAt: {
@@ -67,6 +83,14 @@ module.exports = class Pin extends Sequelize.Model {
     });
     db.Pin.belongsTo(db.Category, {
       foreignKey: "categoryId",
+      onDelete: "CASCADE",
+    });
+    db.Pin.belongsTo(db.Emotion, {
+      foreignKey: "emotionId",
+      onDelete: "CASCADE",
+    });
+    db.Pin.belongsTo(db.Group, {
+      foreignKey: "groupId",
       onDelete: "CASCADE",
     });
   }

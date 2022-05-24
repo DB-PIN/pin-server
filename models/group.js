@@ -1,26 +1,26 @@
 const Sequelize = require("sequelize");
 
-module.exports = class User extends Sequelize.Model {
+module.exports = class Group extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        userId: {
+        groupId: {
           primaryKey: true,
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           allowNull: false,
           unique: true,
         },
-        email: {
-          type: "varchar(30)",
-          allowNull: true,
-        },
-        password: {
-          type: "varchar(10)",
-          allowNull: false,
+        userId: {
+          type: Sequelize.INTEGER.UNSIGNED,
+          references: {
+            models: "User",
+            key: "userId",
+          },
+          onDelete: "CASCADE",
         },
         name: {
-          type: "varchar(6)",
+          type: "varchar(10)",
           allowNull: true,
         },
         createdAt: {
@@ -36,8 +36,8 @@ module.exports = class User extends Sequelize.Model {
       },
       {
         sequelize,
-        modelName: "User",
-        tableName: "User",
+        modelName: "Group",
+        tableName: "Group",
         charset: "utf8",
         collate: "utf8_general_ci",
         initialAutoIncrement: 1,
@@ -49,21 +49,12 @@ module.exports = class User extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.User.hasMany(db.Pin, {
+    db.Group.belongsTo(db.User, {
       foreignKey: "userId",
+      onDelete: "CASCADE",
     });
-    db.User.hasMany(db.Group, {
-      foreignKey: "userId",
-    });
-    db.User.belongsToMany(db.User, {
-      foreignKey: "followingId",
-      as: "Followers",
-      through: "Follow",
-    });
-    db.User.belongsToMany(db.User, {
-      foreignKey: "followerId",
-      as: "Followings",
-      through: "Follow",
+    db.Group.hasMany(db.Pin, {
+      foreignKey: "groupId",
     });
   }
 };
