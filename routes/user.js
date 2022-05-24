@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-const User = require("../models/user");
+const { User, Pin } = require("../models");
 
 const router = express.Router();
 
@@ -64,6 +64,41 @@ router.get("/logout", async (req, res) => {
   req.logout();
   req.session.destroy();
   res.status(200).json({});
+});
+
+// 핀 추가
+router.post("/pin", async (req, res) => {
+  try {
+    const pinDto = await Pin.create(req.body);
+    res.status(200).json(pinDto);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 핀 수정
+router.patch("/pin/:pinId", async (req, res) => {
+  try {
+    await Pin.update(req.body, { where: { pinId: req.params.pinId } });
+    res.status(200).json({ message: "success" });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 핀 삭제
+router.delete("/pin/:pinId", async (req, res) => {
+  try {
+    await Pin.destroy({
+      where: { pinId: req.params.pinId },
+    });
+    res.status(200).json({ message: "success" });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
 });
 
 module.exports = router;

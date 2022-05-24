@@ -3,11 +3,9 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const session = require("express-session");
 const { sequelize } = require("./models");
-const dotenv = require("dotenv");
-// const { generateDummy } = require('./models/dummy');
+require("dotenv").config();
+const { generateDummy } = require("./models/dummy");
 const passport = require("passport");
-
-dotenv.config();
 const passportConfig = require("./passport");
 
 const app = express();
@@ -22,9 +20,9 @@ sequelize
   .then(() => {
     console.log("DB 연결 성공");
 
-    // if (force) {
-    //   generateDummy();
-    // }
+    if (force) {
+      generateDummy();
+    }
   })
   .catch((err) => {
     console.error(err);
@@ -33,7 +31,7 @@ sequelize
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser(cookieParser(process.env.COOKIE_SECRET)));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
   session({
     resave: false,
