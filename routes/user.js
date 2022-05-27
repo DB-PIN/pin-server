@@ -104,14 +104,14 @@ router.delete("/pin/:pinId", async (req, res) => {
 // 그룹 목록 조회
 router.get("/groups", async (req, res) => {
   try {
-    if (req.group) {
-      const groupId = req.group.groupId;
-      const group = await Group.findOne({
-        where: { groupId },
+    if (req.user) {
+      const userId = req.user.userId;
+      const groupDtos = await Group.findAll({
+        where: { userId },
       });
-      res.status(200).json(group);
+      res.status(200).json(groupDtos);
     } else {
-      res.status(400).json({ message: "no group in session" });
+      res.status(400).json({ message: "no user in session" });
     }
   } catch (error) {
     console.error(error);
