@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-const { User, Pin } = require("../models");
+const { User, Pin, Group } = require("../models");
 
 const router = express.Router();
 
@@ -93,6 +93,48 @@ router.delete("/pin/:pinId", async (req, res) => {
   try {
     await Pin.destroy({
       where: { pinId: req.params.pinId },
+    });
+    res.status(200).json({ message: "success" });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 그룹 목록 조회
+router.get("/groups", async (req, res) => {
+  try {
+    if (req.group) {
+      const groupId = req.group.groupId;
+      const group = await Group.findOne({
+        where: { groupId },
+      });
+      res.status(200).json(group);
+    } else {
+      res.status(400).json({ message: "no group in session" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 그룹 추가
+router.post("/group", async (req, res) => {
+  try {
+    const groupDto = await Group.create(req.body);
+    res.status(200).json(groupDto);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 그룹 삭제
+router.delete("/group/:groupId", async (req, res) => {
+  try {
+    await Group.destroy({
+      where: { groupId: req.params.groupId },
     });
     res.status(200).json({ message: "success" });
   } catch (error) {
