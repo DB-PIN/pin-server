@@ -54,7 +54,7 @@ router.post("/login", async (req, res) => {
         console.error(loginError);
         res.status(400).json({ message: "Login Error" });
       }
-      res.status(200).json({});
+      res.status(200).json({ message: "success" });
     });
   })(req, res);
 });
@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
 router.get("/logout", async (req, res) => {
   req.logout();
   req.session.destroy();
-  res.status(200).json({});
+  res.status(200).json({ message: "success" });
 });
 
 // 핀 추가
