@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
     FROM pin.pin P
     JOIN pin.user U
     ON P.userId = U.userId
-    JOIN pin.group G
+    LEFT JOIN pin.group G
     ON G.groupId = P.groupId;
     `);
     res.status(200).json(pinItemDtos[0]);
@@ -20,5 +20,32 @@ router.get("/", async (req, res) => {
     res.status(400).json({ message: "error" });
   }
 });
+
+// 핀 목록 조회 (필터 적용)
+router.get(
+  "/emotion/:emotionId/category/:categoryId/follow/:followId",
+  async (req, res) => {
+    const emotionId = req.params.emotionId == -1 ? "%" : req.params.emotionId;
+    const categoryId =
+      req.params.categoryId == -1 ? "%" : req.params.categoryId;
+    const followId = req.params.followId == -1 ? "%" : req.params.followId;
+    try {
+      const pinItemDtos = await sequelize.query(`
+      SELECT P.pinId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
+      FROM pin.pin P
+      JOIN pin.user U
+      ON P.userId = U.userId
+      LEFT JOIN pin.group G
+      ON G.groupId = P.groupId
+      WHERE P.emotionId like "${emotionId}" and categoryId like "${categoryId}" and P.userId LIKE "${followId}"
+      ;
+      `);
+      res.status(200).json(pinItemDtos[0]);
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: "error" });
+    }
+  }
+);
 
 module.exports = router;
