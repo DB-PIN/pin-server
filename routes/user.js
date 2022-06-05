@@ -215,13 +215,17 @@ router.get("/group/:groupId/pins", async (req, res) => {
 // 해당 유저의 모든 팔로잉 조회
 router.get("/following", async (req, res) => {
   try {
-    if (req.user) {
-      const userId = req.user.userId;
-      const UserDtos = await Follow.findAll({ where: { followerId: userId } });
-      res.status(200).json(UserDtos);
-    } else {
-      res.status(401).json({ message: "no user in session" });
-    }
+    // if (req.user) {
+    // const userId = req.user.userId;
+    const userId = 1;
+    const UserDtos = await Follow.findAll({
+      where: { followerId: userId },
+      include: { model: User },
+    });
+    res.status(200).json(UserDtos);
+    // } else {
+    //   res.status(401).json({ message: "no user in session" });
+    // }
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "error" });
