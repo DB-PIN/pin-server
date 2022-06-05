@@ -234,7 +234,7 @@ router.post("/following", async (req, res) => {
     if (req.user) {
       const userId = req.user.userId;
       const exFollow = await Follow.findOne({
-        where: { followerId: userId, followingId: req.body.targetUserId },
+        where: { followerId: userId, followingId: req.body.userId },
       });
 
       if (exFollow) {
@@ -242,7 +242,7 @@ router.post("/following", async (req, res) => {
       } else {
         const follow = await Follow.create({
           followerId: userId,
-          followingId: req.body.targetUserId,
+          followingId: req.body.userId,
         });
         res.status(200).json(follow);
       }
@@ -256,11 +256,11 @@ router.post("/following", async (req, res) => {
 });
 
 // 팔로잉 삭제
-router.delete("/following", async (req, res) => {
+router.delete("/following/:userId", async (req, res) => {
   try {
     const userId = req.user.userId;
     await Follow.destroy({
-      where: { followerId: userId, followingId: req.body.targetUserId },
+      where: { followerId: userId, followingId: req.params.userId },
     });
     res.status(200).json({ message: "success" });
   } catch (error) {
