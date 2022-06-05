@@ -261,4 +261,30 @@ router.delete("/following", async (req, res) => {
   }
 });
 
+// top3 카테고리 목록 조회
+router.get("/categories/topThree", async (req, res) => {
+  try {
+    if (req.user) {
+      const userId = req.user.userId;
+      const categoryDtos = await sequelize.query(`
+      SELECT C.categoryId, C.name, count(P.pinId) AS "pinCount"
+      FROM pin.pin P
+      JOIN pin.category C
+      ON P.categoryId = C.categoryId
+      WHERE P.userId = ${userId}
+      GROUP BY P.categoryId
+      ORDER BY pinCount DESC
+      LIMIT 3
+      ;
+      `);
+      res.status(200).json(categoryDtos[0]);
+    } else {
+      res.status(400).json({ message: "no user in session" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
 module.exports = router;
