@@ -1,4 +1,6 @@
 const { User, Category, Pin, Group, Emotion } = require("../models");
+const faker = require("faker");
+// faker.locale = "ko";
 
 async function generateDummy() {
   await User.bulkCreate([
@@ -17,7 +19,20 @@ async function generateDummy() {
       password: "ccc",
       name: "김씨씨",
     },
+    {
+      email: faker.internet.email(),
+      password: faker.lorem.word(5),
+      name: faker.name.firstName(),
+    },
   ]);
+
+  for (let i = 0; i < 400; i++) {
+    await User.create({
+      email: faker.internet.email(),
+      password: faker.lorem.word(5),
+      name: faker.name.firstName(),
+    });
+  }
 
   await Category.bulkCreate([
     { name: "맛집" },

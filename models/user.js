@@ -12,15 +12,15 @@ module.exports = class User extends Sequelize.Model {
           unique: true,
         },
         email: {
-          type: "varchar(30)",
+          type: "varchar(50)",
           allowNull: true,
         },
         password: {
-          type: "varchar(10)",
+          type: "varchar(50)",
           allowNull: false,
         },
         name: {
-          type: "varchar(6)",
+          type: "varchar(50)",
           allowNull: true,
         },
         createdAt: {
