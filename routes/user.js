@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-const { User, Pin, Group } = require("../models");
+const { sequelize, User, Pin, Group } = require("../models");
 
 const router = express.Router();
 
@@ -106,10 +106,15 @@ router.get("/groups", async (req, res) => {
   try {
     if (req.user) {
       const userId = req.user.userId;
-      const groupDtos = await Group.findAll({
-        where: { userId },
-      });
-      res.status(200).json(groupDtos);
+      const groupItemDtos = await sequelize.query(`
+      SELECT P.groupId, G.name, count(pinId) AS 'count'
+      FROM pin.pin P
+      JOIN pin.group G
+      ON P.groupId = G.groupId
+      WHERE P.userId = ${userId}
+      GROUP BY groupId;
+      `);
+      res.status(200).json(groupItemDtos[0]);
     } else {
       res.status(400).json({ message: "no user in session" });
     }
