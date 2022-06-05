@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
       });
       res.status(200).json(user);
     } else {
-      res.status(400).json({ message: "no user in session" });
+      res.status(401).json({ message: "no user in session" });
     }
   } catch (error) {
     console.error(error);
@@ -94,7 +94,7 @@ router.post("/pin", async (req, res) => {
       }
       res.status(200).json(pinDto);
     } else {
-      res.status(400).json({ message: "no user in session" });
+      res.status(401).json({ message: "no user in session" });
     }
   } catch (error) {
     console.error(error);
@@ -141,7 +141,7 @@ router.get("/groups", async (req, res) => {
       `);
       res.status(200).json(groupItemDtos[0]);
     } else {
-      res.status(400).json({ message: "no user in session" });
+      res.status(401).json({ message: "no user in session" });
     }
   } catch (error) {
     console.error(error);
@@ -212,7 +212,7 @@ router.get("/following", async (req, res) => {
       const UserDtos = await Follow.findAll({ where: { followerId: userId } });
       res.status(200).json(UserDtos);
     } else {
-      res.status(400).json({ message: "no user in session" });
+      res.status(401).json({ message: "no user in session" });
     }
   } catch (error) {
     console.error(error);
@@ -239,7 +239,7 @@ router.post("/following", async (req, res) => {
         res.status(200).json(follow);
       }
     } else {
-      res.status(400).json({ message: "no user in session" });
+      res.status(401).json({ message: "no user in session" });
     }
   } catch (error) {
     console.error(error);
@@ -279,7 +279,7 @@ router.get("/categories/topThree", async (req, res) => {
       `);
       res.status(200).json(categoryDtos[0]);
     } else {
-      res.status(400).json({ message: "no user in session" });
+      res.status(401).json({ message: "no user in session" });
     }
   } catch (error) {
     console.error(error);
