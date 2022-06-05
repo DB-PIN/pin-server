@@ -35,9 +35,11 @@ async function generateDummy() {
   }
 
   await Category.bulkCreate([
-    { name: "맛집" },
-    { name: "카페" },
-    { name: "문화" },
+    { categoryId: 1, name: "맛집" },
+    { categoryId: 2, name: "카페" },
+    { categoryId: 3, name: "술집" },
+    { categoryId: 4, name: "관광지" },
+    { categoryId: 5, name: "주차장" },
   ]);
 
   await Group.bulkCreate([
@@ -47,9 +49,11 @@ async function generateDummy() {
   ]);
 
   await Emotion.bulkCreate([
-    { name: "행복" },
-    { name: "슬픔" },
-    { name: "멋짐" },
+    { emotionId: 1, name: "매우좋음" },
+    { emotionId: 2, name: "좋음" },
+    { emotionId: 3, name: "보통" },
+    { emotionId: 4, name: "별로" },
+    { emotionId: 5, name: "매우별로" },
   ]);
 
   await Pin.bulkCreate([

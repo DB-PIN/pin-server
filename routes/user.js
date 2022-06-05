@@ -152,8 +152,16 @@ router.get("/groups", async (req, res) => {
 // 그룹 추가
 router.post("/group", async (req, res) => {
   try {
-    const groupDto = await Group.create(req.body);
-    res.status(200).json(groupDto);
+    if (req.user) {
+      const userId = req.user.userId;
+      const groupDto = await Group.create({
+        userId,
+        name: req.body.name,
+      });
+      res.status(200).json(groupDto);
+    } else {
+      res.status(401).json({ message: "no user in session" });
+    }
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "error" });
