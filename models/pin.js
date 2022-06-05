@@ -37,6 +37,7 @@ module.exports = class Pin extends Sequelize.Model {
         },
         groupId: {
           type: Sequelize.INTEGER.UNSIGNED,
+          allowNull: true,
           references: {
             models: "Group",
             key: "groupId",

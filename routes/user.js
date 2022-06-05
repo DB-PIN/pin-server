@@ -69,8 +69,33 @@ router.get("/logout", async (req, res) => {
 // 핀 추가
 router.post("/pin", async (req, res) => {
   try {
-    const pinDto = await Pin.create(req.body);
-    res.status(200).json(pinDto);
+    if (req.user) {
+      const userId = req.user.userId;
+      const groupId = req.body.groupId;
+      let pinDto;
+      // 소속 그룹 존재
+      if (groupId != -1) {
+        pinDto = await Pin.create({
+          userId,
+          name: req.body.name,
+          address: req.body.address,
+          categoryId: req.body.categoryId,
+          emotionId: req.body.emotionId,
+          groupId: req.body.groupId,
+        });
+      } else {
+        pinDto = await Pin.create({
+          userId,
+          name: req.body.name,
+          address: req.body.address,
+          categoryId: req.body.categoryId,
+          emotionId: req.body.emotionId,
+        });
+      }
+      res.status(200).json(pinDto);
+    } else {
+      res.status(400).json({ message: "no user in session" });
+    }
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "error" });
@@ -142,6 +167,37 @@ router.delete("/group/:groupId", async (req, res) => {
       where: { groupId: req.params.groupId },
     });
     res.status(200).json({ message: "success" });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 그룹에 속한 핀 조회
+router.get("/group/:groupId/pins", async (req, res) => {
+  try {
+    const groupId = req.params.groupId == -1 ? null : req.params.groupId;
+    let pinItemDtos;
+    if (groupId) {
+      pinItemDtos = await sequelize.query(`
+      SELECT P.pinId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
+      FROM pin.pin P 
+      JOIN pin.user U
+      ON P.userId = U.userId
+      JOIN pin.group G
+      ON G.groupId = P.groupId
+      WHERE P.groupId=${groupId}
+      `);
+    } else {
+      pinItemDtos = await sequelize.query(`
+      SELECT P.pinId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId AS 'groupName'
+      FROM pin.pin P
+      JOIN pin.user U
+      ON P.userId = U.userId
+      WHERE P.groupId is null;
+      `);
+    }
+    res.status(200).json(pinItemDtos[0]);
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "error" });
