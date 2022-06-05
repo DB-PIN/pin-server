@@ -55,15 +55,11 @@ module.exports = class User extends Sequelize.Model {
     db.User.hasMany(db.Group, {
       foreignKey: "userId",
     });
-    db.User.belongsToMany(db.User, {
-      foreignKey: "followingId",
-      as: "Followers",
-      through: "Follow",
-    });
-    db.User.belongsToMany(db.User, {
+    db.User.hasMany(db.Follow, {
       foreignKey: "followerId",
-      as: "Followings",
-      through: "Follow",
+    });
+    db.User.hasMany(db.Follow, {
+      foreignKey: "followingId",
     });
   }
 };
