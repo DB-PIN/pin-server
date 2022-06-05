@@ -7,6 +7,7 @@ require("dotenv").config();
 const { generateDummy } = require("./models/dummy");
 const passport = require("passport");
 const passportConfig = require("./passport");
+const cors = require("cors");
 
 const app = express();
 passportConfig();
@@ -41,6 +42,20 @@ app.use(
       httpOnly: true,
       secure: false,
     },
+  })
+);
+
+const whiteList = ["http://localhost:3000"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      console.log(origin);
+      if (origin && whiteList.indexOf(origin) == -1)
+        callback(new Error("Not Allowed Origin"));
+      else callback(null, true);
+    },
+    credentials: true,
   })
 );
 
