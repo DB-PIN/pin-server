@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-const { sequelize, User, Pin, Group } = require("../models");
+const { sequelize, User, Pin, Group, Follow } = require("../models");
 
 const router = express.Router();
 
@@ -140,6 +140,63 @@ router.delete("/group/:groupId", async (req, res) => {
   try {
     await Group.destroy({
       where: { groupId: req.params.groupId },
+    });
+    res.status(200).json({ message: "success" });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 해당 유저의 모든 팔로잉 조회
+router.get("/following", async (req, res) => {
+  try {
+    if (req.user) {
+      const userId = req.user.userId;
+      const UserDtos = await Follow.findAll({ where: { followerId: userId } });
+      res.status(200).json(UserDtos);
+    } else {
+      res.status(400).json({ message: "no user in session" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 팔로잉 추가
+router.post("/following", async (req, res) => {
+  try {
+    if (req.user) {
+      const userId = req.user.userId;
+      const exFollow = await Follow.findOne({
+        where: { followerId: userId, followingId: req.body.targetUserId },
+      });
+
+      if (exFollow) {
+        res.status(400).json({ message: "duplicated follow" });
+      } else {
+        const follow = await Follow.create({
+          followerId: userId,
+          followingId: req.body.targetUserId,
+        });
+        res.status(200).json(follow);
+      }
+    } else {
+      res.status(400).json({ message: "no user in session" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "error" });
+  }
+});
+
+// 팔로잉 삭제
+router.delete("/following", async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    await Follow.destroy({
+      where: { followerId: userId, followingId: req.body.targetUserId },
     });
     res.status(200).json({ message: "success" });
   } catch (error) {
