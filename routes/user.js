@@ -129,7 +129,7 @@ router.get("/groups", async (req, res) => {
       const groupItemDtos = await sequelize.query(`
       SELECT G.groupId, G.name, count(P.pinId) AS 'count'
       FROM pin.group G
-      LEFT JOIN pin.pin P
+      JOIN pin.pin P
       ON P.groupId = G.groupId
       WHERE G.userId = ${userId}
       GROUP BY groupId;
