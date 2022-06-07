@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const pinItemDtos = await sequelize.query(`
-    SELECT P.pinId, P.userId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
+    SELECT P.pinId, U.userId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
     FROM pin.pin P
     JOIN pin.user U
     ON P.userId = U.userId

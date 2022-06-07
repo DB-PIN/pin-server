@@ -11,14 +11,6 @@ module.exports = class Pin extends Sequelize.Model {
           allowNull: false,
           unique: true,
         },
-        userId: {
-          type: Sequelize.INTEGER.UNSIGNED,
-          references: {
-            models: "User",
-            key: "userId",
-          },
-          onDelete: "CASCADE",
-        },
         categoryId: {
           type: Sequelize.INTEGER.UNSIGNED,
           references: {
@@ -78,10 +70,6 @@ module.exports = class Pin extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Pin.belongsTo(db.User, {
-      foreignKey: "userId",
-      onDelete: "CASCADE",
-    });
     db.Pin.belongsTo(db.Category, {
       foreignKey: "categoryId",
       onDelete: "CASCADE",

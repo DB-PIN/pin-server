@@ -49,9 +49,6 @@ module.exports = class User extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.User.hasMany(db.Pin, {
-      foreignKey: "userId",
-    });
     db.User.hasMany(db.Group, {
       foreignKey: "userId",
     });

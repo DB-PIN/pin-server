@@ -19,18 +19,32 @@ async function generateDummy() {
       password: "ccc",
       name: "김씨씨",
     },
+  ]);
+
+  await Group.bulkCreate([
     {
-      email: faker.internet.email(),
-      password: faker.lorem.word(5),
-      name: faker.name.firstName(),
+      userId: 1,
+      name: "기본 그룹",
+    },
+    {
+      userId: 2,
+      name: "기본 그룹",
+    },
+    {
+      userId: 3,
+      name: "기본 그룹",
     },
   ]);
 
   for (let i = 0; i < 400; i++) {
-    await User.create({
+    const user = await User.create({
       email: faker.internet.email(),
       password: faker.lorem.word(5),
       name: faker.name.firstName(),
+    });
+    await Group.create({
+      userId: user.userId,
+      name: "기본 그룹",
     });
   }
 
@@ -58,7 +72,6 @@ async function generateDummy() {
 
   await Pin.bulkCreate([
     {
-      userId: 1,
       categoryId: 1,
       emotionId: 1,
       groupId: 1,
@@ -66,7 +79,6 @@ async function generateDummy() {
       address: "경기도 수원시 영통구 원천동 팔달관",
     },
     {
-      userId: 1,
       categoryId: 2,
       emotionId: 2,
       groupId: 2,
@@ -74,7 +86,6 @@ async function generateDummy() {
       address: "경기도 수원시 영통구 원천동 팔달관",
     },
     {
-      userId: 1,
       categoryId: 2,
       emotionId: 3,
       groupId: 3,

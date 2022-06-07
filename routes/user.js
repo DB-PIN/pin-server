@@ -31,6 +31,10 @@ router.post("/", async (req, res) => {
       res.status(400).json({ message: "already joined user" });
     }
     const userDto = await User.create(req.body);
+    await Group.create({
+      userId: userDto.userId,
+      name: "기본그룹",
+    });
     res.status(200).json(userDto);
   } catch (error) {
     console.error(error);
