@@ -25,20 +25,26 @@ router.get("/", async (req, res) => {
 
 // 회원가입 라우터
 router.post("/", async (req, res) => {
+  const t = await sequelize.transaction();
   const { email, nickname, password } = req.body;
   try {
     const exUser = await User.findOne({ where: { email } });
     if (exUser) {
       res.status(400).json({ message: "already joined user" });
     }
-    const userDto = await User.create(req.body);
-    await Group.create({
-      userId: userDto.userId,
-      name: "기본그룹",
-    });
+    const userDto = await User.create(req.body, { transaction: t });
+    await Group.create(
+      {
+        userId: userDto.userId,
+        name: "기본그룹",
+      },
+      { transaction: t }
+    );
+    await t.commit();
     res.status(200).json(userDto);
   } catch (error) {
     console.error(error);
+    await t.rollback();
     res.status(400).json({ message: "error" });
   }
 });
