@@ -138,6 +138,7 @@ router.get("/groups", async (req, res) => {
       JOIN pin.pin P
       ON P.groupId = G.groupId
       WHERE G.userId = ${userId}
+      AND P.createdAt >= date_add(now(), interval -3 year)
       GROUP BY groupId;
       `);
       res.status(200).json(groupItemDtos[0]);
