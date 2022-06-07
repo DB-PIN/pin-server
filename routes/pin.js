@@ -13,6 +13,8 @@ router.get("/", async (req, res) => {
     ON G.groupId = P.groupId
     JOIN pin.user U
     ON G.userId = U.userId
+    WHERE P.createdAt >= date_add(now(), interval -3 year)
+    ;
     `);
     res.status(200).json(pinItemDtos[0]);
   } catch (error) {
@@ -38,6 +40,8 @@ router.get(
       JOIN pin.user U
       ON G.userId = U.userId
       WHERE P.emotionId like "${emotionId}" and P.categoryId like "${categoryId}" and U.userId LIKE "${followId}"
+      AND 
+      P.createdAt >= date_add(now(), interval -3 year)
       ;
       `);
       res.status(200).json(pinItemDtos[0]);

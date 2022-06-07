@@ -194,6 +194,7 @@ router.get("/group/:groupId/pins", async (req, res) => {
     JOIN pin.user U
     ON G.userId = U.userId
     WHERE P.groupId=${groupId}
+    AND P.createdAt >= date_add(now(), interval -3 year)
     `);
     res.status(200).json(pinItemDtos[0]);
   } catch (error) {
@@ -274,7 +275,7 @@ router.get("/categories/topThree", async (req, res) => {
       ON G.groupId = P.groupId
       JOIN pin.category C
       ON P.categoryId = C.categoryId
-      WHERE G.userId = ${userId}
+      WHERE G.userId = ${userId} AND P.createdAt >= date_add(now(), interval -3 year)
       GROUP BY P.categoryId
       ORDER BY pinCount DESC
       LIMIT 3
