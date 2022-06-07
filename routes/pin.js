@@ -8,11 +8,11 @@ router.get("/", async (req, res) => {
   try {
     const pinItemDtos = await sequelize.query(`
     SELECT P.pinId, U.userId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
-    FROM pin.pin P
+    FROM pin.pin P 
+    JOIN pin.group G
+    ON G.groupId = P.groupId
     JOIN pin.user U
-    ON P.userId = U.userId
-    LEFT JOIN pin.group G
-    ON G.groupId = P.groupId;
+    ON G.userId = U.userId
     `);
     res.status(200).json(pinItemDtos[0]);
   } catch (error) {
@@ -31,13 +31,13 @@ router.get(
     const followId = req.params.followId == -1 ? "%" : req.params.followId;
     try {
       const pinItemDtos = await sequelize.query(`
-      SELECT P.pinId, P.userId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
-      FROM pin.pin P
-      JOIN pin.user U
-      ON P.userId = U.userId
-      LEFT JOIN pin.group G
+      SELECT P.pinId, U.userId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
+      FROM pin.pin P 
+      JOIN pin.group G
       ON G.groupId = P.groupId
-      WHERE P.emotionId like "${emotionId}" and categoryId like "${categoryId}" and P.userId LIKE "${followId}"
+      JOIN pin.user U
+      ON G.userId = U.userId
+      WHERE P.emotionId like "${emotionId}" and P.categoryId like "${categoryId}" and U.userId LIKE "${followId}"
       ;
       `);
       res.status(200).json(pinItemDtos[0]);

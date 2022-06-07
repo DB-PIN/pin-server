@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+const utils = require("../libs/utils");
 const { sequelize, User, Pin, Group, Follow } = require("../models");
 
 const router = express.Router();
@@ -75,27 +76,17 @@ router.post("/pin", async (req, res) => {
   try {
     if (req.user) {
       const userId = req.user.userId;
-      const groupId = req.body.groupId;
-      let pinDto;
-      // 소속 그룹 존재
-      if (groupId != -1) {
-        pinDto = await Pin.create({
-          userId,
-          name: req.body.name,
-          address: req.body.address,
-          categoryId: req.body.categoryId,
-          emotionId: req.body.emotionId,
-          groupId: req.body.groupId,
-        });
-      } else {
-        pinDto = await Pin.create({
-          userId,
-          name: req.body.name,
-          address: req.body.address,
-          categoryId: req.body.categoryId,
-          emotionId: req.body.emotionId,
-        });
-      }
+      const groupId =
+        req.body.groupId == -1
+          ? await utils.getDefaultGroupId(userId)
+          : req.body.groupId;
+      const pinDto = await Pin.create({
+        name: req.body.name,
+        address: req.body.address,
+        categoryId: req.body.categoryId,
+        emotionId: req.body.emotionId,
+        groupId,
+      });
       res.status(200).json(pinDto);
     } else {
       res.status(401).json({ message: "no user in session" });
@@ -189,26 +180,15 @@ router.delete("/group/:groupId", async (req, res) => {
 router.get("/group/:groupId/pins", async (req, res) => {
   try {
     const groupId = req.params.groupId == -1 ? null : req.params.groupId;
-    let pinItemDtos;
-    if (groupId) {
-      pinItemDtos = await sequelize.query(`
-      SELECT P.pinId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
-      FROM pin.pin P 
-      JOIN pin.user U
-      ON P.userId = U.userId
-      JOIN pin.group G
-      ON G.groupId = P.groupId
-      WHERE P.groupId=${groupId}
-      `);
-    } else {
-      pinItemDtos = await sequelize.query(`
-      SELECT P.pinId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId AS 'groupName'
-      FROM pin.pin P
-      JOIN pin.user U
-      ON P.userId = U.userId
-      WHERE P.groupId is null;
-      `);
-    }
+    const pinItemDtos = await sequelize.query(`
+    SELECT P.pinId, U.name AS 'userName', P.name, P.address, P.categoryId, P.emotionId, G.name AS 'groupName'
+    FROM pin.pin P 
+    JOIN pin.group G
+    ON G.groupId = P.groupId
+    JOIN pin.user U
+    ON G.userId = U.userId
+    WHERE P.groupId=${groupId}
+    `);
     res.status(200).json(pinItemDtos[0]);
   } catch (error) {
     console.error(error);
@@ -283,10 +263,12 @@ router.get("/categories/topThree", async (req, res) => {
       const userId = req.user.userId;
       const categoryDtos = await sequelize.query(`
       SELECT C.categoryId, C.name, count(P.pinId) AS "pinCount"
-      FROM pin.pin P
+      FROM pin.pin P 
+      JOIN pin.group G
+      ON G.groupId = P.groupId
       JOIN pin.category C
       ON P.categoryId = C.categoryId
-      WHERE P.userId = ${userId}
+      WHERE G.userId = ${userId}
       GROUP BY P.categoryId
       ORDER BY pinCount DESC
       LIMIT 3
